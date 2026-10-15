@@ -1,0 +1,69 @@
+package com.fraud.engine.rules;
+
+import java.util.Map;
+import java.util.Optional;
+import com.fraud.engine.model.Transaction;
+
+public class ForeignCountryRule implements FraudRule {
+
+    // Country -> risk score (0-100). Higher = more risky
+    // Based on fraud intel, chargeback rates, dark web activity
+    private static final Map<String, Integer> COUNTRY_RISK_SCORE = Map.ofEntries(
+        Map.entry("NG", 95), Map.entry("NIGERIA", 95),
+        Map.entry("GH", 85), Map.entry("GHANA", 85),
+        Map.entry("CM", 80), Map.entry("CAMEROON", 80),
+        Map.entry("RU", 90), Map.entry("RUSSIA", 90),
+        Map.entry("UA", 75), Map.entry("UKRAINE", 75),
+        Map.entry("PK", 80), Map.entry("PAKISTAN", 80),
+        Map.entry("ID", 70), Map.entry("INDONESIA", 70),
+        Map.entry("RO", 70), Map.entry("ROMANIA", 70),
+        Map.entry("VN", 65), Map.entry("VIETNAM", 65),
+        Map.entry("PH", 60), Map.entry("PHILIPPINES", 60)
+    );
+
+    private int lastRiskScore = 0;
+
+    @Override
+    public Optional<String> apply(Transaction transaction) {
+        if (transaction.getCountry() == null || transaction.getCountry().isBlank()) {
+            lastRiskScore = 30;
+            return Optional.of("Country is missing [Risk: +30]");
+        }
+
+        String country = transaction.getCountry().trim().toUpperCase();
+        Integer score = COUNTRY_RISK_SCORE.get(country);
+
+        if (score != null) {
+            lastRiskScore = score;
+            return Optional.of(
+                String.format("High-risk country: %s | Risk Score: +%d | Category: %s",
+                    transaction.getCountry(),
+                    score,
+                    getRiskCategory(score))
+            );
+        }
+
+        lastRiskScore = 0;
+        return Optional.empty();
+    }
+
+    public int getLastRiskScore() {
+        return lastRiskScore;
+    }
+
+    private String getRiskCategory(int score) {
+        if (score >= 90) return "CRITICAL";
+        if (score >= 80) return "HIGH";
+        if (score >= 65) return "MEDIUM";
+        return "LOW";
+    }
+
+    @Override
+    public String getRuleName() {
+        return "ForeignCountryRule";
+    }
+
+    public static Map<String, Integer> getCountryRiskMap() {
+        return COUNTRY_RISK_SCORE;
+    }
+}
