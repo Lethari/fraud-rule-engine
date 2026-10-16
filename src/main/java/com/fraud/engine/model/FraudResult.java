@@ -1,26 +1,51 @@
 package com.fraud.engine.model;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Collections;
 
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
 public class FraudResult {
-    private final String transactionId;
-    private final boolean fraud;
-    private final  List<String> reasons;
-    private final int riskScore;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String transactionId;
+    private boolean fraud;
+    private int riskScore;
+
+    @ElementCollection
+    private List<String> reasons = new ArrayList<>();
+
+    // JPA with no-args constructor
+    public FraudResult() {}
 
     public FraudResult(String transactionId, boolean fraud, List<String> reasons, int riskScore) {
-        this.transactionId = transactionId; this.fraud = fraud;
-        this.reasons = reasons; this.riskScore = riskScore;
+        this.transactionId = transactionId;
+        this.fraud = fraud;
+        this.reasons = reasons;
+        this.riskScore = riskScore;
     }
+
+    // Getters and Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
     public String getTransactionId() { return transactionId; }
+    public void setTransactionId(String transactionId) { this.transactionId = transactionId; }
+
     public boolean isFraud() { return fraud; }
-    public List<String> getReasons() { return Collections.unmodifiableList(reasons); } //Caller cannot modify internal fraud reasons.
+    public void setFraud(boolean fraud) { this.fraud = fraud; }
+
+    public List<String> getReasons() { return reasons; }
+    public void setReasons(List<String> reasons) { this.reasons = reasons; }
+
     public int getRiskScore() { return riskScore; }
-
-
-    @Override
-    public String toString() {
-        return "FraudResult{id=" + transactionId + ", fraud=" + fraud + ", reasons=" + reasons + ", score=" + riskScore + "}";
-    }
+    public void setRiskScore(int riskScore) { this.riskScore = riskScore; }
 }
