@@ -1,9 +1,11 @@
 package com.fraud.engine.rules;
 
-import com.fraud.engine.model.Transaction;
 import java.math.BigDecimal;
 import java.util.Optional;
+import com.fraud.engine.model.Transaction;
+import org.springframework.stereotype.Component;
 
+@Component
 public class HighAmountRule implements FraudRule {
     private final BigDecimal threshold;
     private int lastScore = 0;

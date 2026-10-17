@@ -2,7 +2,9 @@ package com.fraud.engine.rules;
 
 import java.util.Optional;
 import com.fraud.engine.model.Transaction;
+import org.springframework.stereotype.Component;
 
+@Component
 public class NightTimeRule implements FraudRule {
     private int lastScore = 0;
 

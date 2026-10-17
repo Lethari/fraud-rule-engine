@@ -3,11 +3,11 @@ package com.fraud.engine.rules;
 import java.util.Map;
 import java.util.Optional;
 import com.fraud.engine.model.Transaction;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ForeignCountryRule implements FraudRule {
 
-    // Country -> risk score (0-100). Higher = more risky
-    // Based on fraud intel, chargeback rates, dark web activity
     private static final Map<String, Integer> COUNTRY_RISK_SCORE = Map.ofEntries(
         Map.entry("NG", 95), Map.entry("NIGERIA", 95),
         Map.entry("GH", 85), Map.entry("GHANA", 85),
@@ -29,33 +29,14 @@ public class ForeignCountryRule implements FraudRule {
             lastRiskScore = 30;
             return Optional.of("Country is missing [Risk: +30]");
         }
-
         String country = transaction.getCountry().trim().toUpperCase();
         Integer score = COUNTRY_RISK_SCORE.get(country);
-
         if (score != null) {
             lastRiskScore = score;
-            return Optional.of(
-                String.format("High-risk country: %s | Risk Score: +%d | Category: %s",
-                    transaction.getCountry(),
-                    score,
-                    getRiskCategory(score))
-            );
+            return Optional.of("High risk country: " + country + " [Risk: +" + score + "]");
         }
-
         lastRiskScore = 0;
         return Optional.empty();
-    }
-
-    public int getLastRiskScore() {
-        return lastRiskScore;
-    }
-
-    private String getRiskCategory(int score) {
-        if (score >= 90) return "CRITICAL";
-        if (score >= 80) return "HIGH";
-        if (score >= 65) return "MEDIUM";
-        return "LOW";
     }
 
     @Override
@@ -63,7 +44,8 @@ public class ForeignCountryRule implements FraudRule {
         return "ForeignCountryRule";
     }
 
-    public static Map<String, Integer> getCountryRiskMap() {
-        return COUNTRY_RISK_SCORE;
+    @Override
+    public int getRiskScore() {
+        return lastRiskScore;
     }
 }
