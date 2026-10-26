@@ -1,1 +1,10 @@
+com\fraud\engine\model\Transaction.class
+com\fraud\engine\service\FraudEngineService.class
+com\fraud\engine\app\FraudEngineApp.class
 com\fraud\engine\model\FraudResult.class
+com\fraud\engine\rules\ForeignCountryRule.class
+com\fraud\engine\rules\HighAmountRule.class
+com\fraud\engine\controller\FraudController.class
+com\fraud\engine\rules\NightTimeRule.class
+com\fraud\engine\repository\FraudResultRepository.class
+com\fraud\engine\rules\FraudRule.class

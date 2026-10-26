@@ -1,13 +1,19 @@
 package com.fraud.engine.controller;
 
-import com.fraud.engine.model.FraudResult;
-import com.fraud.engine.repository.FraudResultRepository;
-import com.fraud.engine.model.Transaction;
-import com.fraud.engine.service.FraudEngineService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.fraud.engine.model.FraudResult;
+import com.fraud.engine.model.Transaction;
+import com.fraud.engine.repository.FraudResultRepository;
+import com.fraud.engine.service.FraudEngineService;
 
 @RestController
 @RequestMapping("/api/fraud")
@@ -23,6 +29,7 @@ public class FraudController {
 
     }
     // Endpoint to check if a transaction is fraudulent
+    @SuppressWarnings("null")
     @PostMapping("/check")
     public ResponseEntity<FraudResult> checkFraud(@RequestBody Transaction transaction) {
         FraudResult result = fraudEngineService.evaluate(transaction);

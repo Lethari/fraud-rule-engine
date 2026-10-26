@@ -1,4 +1,4 @@
-package test.com.fraud.engine.service;
+package com.fraud.engine.service;
 
 public class FraudEngineServiceTest {
     

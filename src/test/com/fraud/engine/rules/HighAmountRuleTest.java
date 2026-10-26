@@ -1,4 +1,4 @@
-package test.com.fraud.engine.rules;
+package com.fraud.engine.rules;
 
 public class HighAmountRuleTest {
     
