@@ -1,53 +1,48 @@
 package com.fraud.engine.service;
 
 import com.fraud.engine.model.FraudResult;
-import com.fraud.engine.repository.FraudResultRepository;
+import com.fraud.engine.model.Transaction;
 import com.fraud.engine.rules.FraudRule;
 import org.springframework.stereotype.Service;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class FraudEngineService {
 
-    private final FraudResultRepository repository;
     private final List<FraudRule> rules;
 
-    public FraudEngineService(FraudResultRepository repository, List<FraudRule> rules) {
-        this.repository = repository;
+    public FraudEngineService(List<FraudRule> rules) {
         this.rules = rules;
     }
 
-    public FraudResult checkFraud(Map<String, Object> transaction) {
+    public FraudResult evaluate(Transaction transaction) {
         int totalScore = 0;
-        StringBuilder reasons = new StringBuilder();
-
-        double amount = ((Number) transaction.getOrDefault("amount", 0)).doubleValue();
-        String country = (String) transaction.getOrDefault("country", "ZA");
-        int hour = ((Number) transaction.getOrDefault("hour", 12)).intValue();
-
+        List<String> reasons = new ArrayList<>();
+        
+        // Evaluate each rule and accumulate the risk score and reasons
         for (FraudRule rule : rules) {
-            if (rule.evaluate(transaction)) {
-                totalScore += rule.getScore();
-                reasons.append(rule.getReason()).append("; ");
+            Optional<String> result = rule.apply(transaction);
+            if (result.isPresent()) {
+                totalScore += rule.getRiskScore();
+                reasons.add(result.get());
             }
         }
 
         boolean isFraud = totalScore >= 50;
         String category = totalScore >= 80 ? "CRITICAL" : totalScore >= 50 ? "HIGH" : totalScore >= 20 ? "MEDIUM" : "LOW";
 
-        FraudResult result = new FraudResult();
-        result.setAmount(amount);
-        result.setCountry(country);
-        result.setRiskScore(totalScore);
-        result.setFraud(isFraud);
-        result.setCategory(category);
-        result.setReason(reasons.toString());
+        // Create and Return a FraudResult object with the evaluation details
+        FraudResult fr = new FraudResult();
+        fr.setTransactionId(transaction.getId());
+        fr.setAmount(transaction.getAmount());
+        fr.setCountry(transaction.getCountry());
+        fr.setFraud(isFraud);
+        fr.setRiskScore(totalScore);
+        fr.setCategory(category);
+        fr.setReasons(reasons);
 
-        return repository.save(result);
-    }
-
-    public List<FraudResult> getHistory() {
-        return repository.findAll();
+        return fr;
     }
 }

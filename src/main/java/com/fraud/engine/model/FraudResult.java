@@ -1,13 +1,9 @@
 package com.fraud.engine.model;
 
+import jakarta.persistence.*;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 
 @Entity
 public class FraudResult {
@@ -17,15 +13,18 @@ public class FraudResult {
     private Long id;
 
     private String transactionId;
+    private BigDecimal amount;
+    private String country;
     private boolean fraud;
     private int riskScore;
+    private String category; // HIGH, MEDIUM, LOW
 
     @ElementCollection
     private List<String> reasons = new ArrayList<>();
 
-    // JPA with no-args constructor
     public FraudResult() {}
 
+    // Constructor for creating a FraudResult with all fields
     public FraudResult(String transactionId, boolean fraud, List<String> reasons, int riskScore) {
         this.transactionId = transactionId;
         this.fraud = fraud;
@@ -40,12 +39,21 @@ public class FraudResult {
     public String getTransactionId() { return transactionId; }
     public void setTransactionId(String transactionId) { this.transactionId = transactionId; }
 
+    public BigDecimal getAmount() { return amount; }
+    public void setAmount(BigDecimal amount) { this.amount = amount; }
+
+    public String getCountry() { return country; }
+    public void setCountry(String country) { this.country = country; }
+
     public boolean isFraud() { return fraud; }
     public void setFraud(boolean fraud) { this.fraud = fraud; }
 
-    public List<String> getReasons() { return reasons; }
-    public void setReasons(List<String> reasons) { this.reasons = reasons; }
-
     public int getRiskScore() { return riskScore; }
     public void setRiskScore(int riskScore) { this.riskScore = riskScore; }
+
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
+
+    public List<String> getReasons() { return reasons; }
+    public void setReasons(List<String> reasons) { this.reasons = reasons; }
 }

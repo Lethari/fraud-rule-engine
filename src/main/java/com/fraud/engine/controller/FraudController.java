@@ -22,7 +22,7 @@ public class FraudController {
         this.fraudResultRepository = fraudResultRepository;
 
     }
-
+    // Endpoint to check if a transaction is fraudulent
     @PostMapping("/check")
     public ResponseEntity<FraudResult> checkFraud(@RequestBody Transaction transaction) {
         FraudResult result = fraudEngineService.evaluate(transaction);

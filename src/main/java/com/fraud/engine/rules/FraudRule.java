@@ -7,7 +7,7 @@ public interface FraudRule {
     Optional<String> apply(Transaction transaction);
     String getRuleName();
     
-    // New: each rule tells how much risk it adds
+    // Default implementation for getRiskScore, can be overridden by implementing classes
     default int getRiskScore() {
         return 0;
     }

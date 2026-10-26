@@ -2,19 +2,22 @@ package com.fraud.engine.rules;
 
 import java.util.Map;
 import java.util.Optional;
-import com.fraud.engine.model.Transaction;
+
 import org.springframework.stereotype.Component;
+
+import com.fraud.engine.model.Transaction;
 
 @Component
 public class ForeignCountryRule implements FraudRule {
 
+    //Defining a static map of high-risk countries and their associated risk scores
     private static final Map<String, Integer> COUNTRY_RISK_SCORE = Map.ofEntries(
         Map.entry("NG", 95), Map.entry("NIGERIA", 95),
+        Map.entry("RU", 90), Map.entry("RUSSIA", 90),
         Map.entry("GH", 85), Map.entry("GHANA", 85),
         Map.entry("CM", 80), Map.entry("CAMEROON", 80),
-        Map.entry("RU", 90), Map.entry("RUSSIA", 90),
-        Map.entry("UA", 75), Map.entry("UKRAINE", 75),
         Map.entry("PK", 80), Map.entry("PAKISTAN", 80),
+        Map.entry("UA", 75), Map.entry("UKRAINE", 75),
         Map.entry("ID", 70), Map.entry("INDONESIA", 70),
         Map.entry("RO", 70), Map.entry("ROMANIA", 70),
         Map.entry("VN", 65), Map.entry("VIETNAM", 65),

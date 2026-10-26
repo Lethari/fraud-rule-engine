@@ -21,17 +21,20 @@ public Transaction(String id, BigDecimal amount, String country, LocalDateTime t
         this.cardNumber = cardNumber;
     }
 
-    // Getters
+    // Getters and Setters
     public String getId() { return id; }
-    public BigDecimal getAmount() { return amount; }
-    public String getCountry() { return country; }
-    public LocalDateTime getTimestamp() { return timestamp; }
-    public String getCardNumber() { return cardNumber; }
-
-    // Setters
     public void setId(String id) { this.id = id; }
+
+    public BigDecimal getAmount() { return amount; }
     public void setAmount(BigDecimal amount) { this.amount = amount; }
+
+    public String getCountry() { return country; }
     public void setCountry(String country) { this.country = country; }
+
+    public LocalDateTime getTimestamp() { return timestamp; }
     public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
+
+    public String getCardNumber() { return cardNumber; }
     public void setCardNumber(String cardNumber) { this.cardNumber = cardNumber; }
+
 }

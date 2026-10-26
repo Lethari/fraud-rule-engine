@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class HighAmountRule implements FraudRule {
+    // Threshold for high amount transactions, default is 10,000
     private final BigDecimal threshold;
     private int lastScore = 0;
 
@@ -15,6 +16,7 @@ public class HighAmountRule implements FraudRule {
 
     @Override
     public Optional<String> apply(Transaction t) {
+        // Check the transaction amount against various thresholds
         BigDecimal amount = t.getAmount();
         if (amount.compareTo(new BigDecimal("50000")) > 0) { lastScore = 80; return Optional.of("CRITICAL amount: R" + amount + " [Risk: +80]"); }
         if (amount.compareTo(new BigDecimal("20000")) > 0) { lastScore = 50; return Optional.of("Very high amount: R" + amount + " [Risk: +50]"); }
