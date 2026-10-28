@@ -1,2 +1,49 @@
 services:
-  
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: "${DATABASE_NAME:-fraud_engine}"
+      POSTGRES_USER: "${DATABASE_USERNAME:?Set DATABASE_USERNAME in .env}"
+      POSTGRES_PASSWORD: "${DATABASE_PASSWORD:?Set DATABASE_PASSWORD in .env}"
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    restart: unless-stopped
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - path: .env
+        required: false
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: "jdbc:postgresql://postgres:5432/${DATABASE_NAME:-fraud_engine}"
+      DATABASE_USERNAME: "${DATABASE_USERNAME:?Set DATABASE_USERNAME in .env}"
+      DATABASE_PASSWORD: "${DATABASE_PASSWORD:?Set DATABASE_PASSWORD in .env}"
+      FRAUD_API_USERNAME: "${FRAUD_API_USERNAME:?Set FRAUD_API_USERNAME in .env}"
+      FRAUD_API_PASSWORD: "${FRAUD_API_PASSWORD:?Set FRAUD_API_PASSWORD in .env}"
+      FRAUD_CORS_ALLOWED_ORIGINS: "${FRAUD_CORS_ALLOWED_ORIGINS:-}"
+    ports:
+      - "8080:8080"
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+
+volumes:
+  postgres-data:

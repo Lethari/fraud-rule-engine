@@ -2,29 +2,38 @@ package com.fraud.engine.rules;
 
 import java.math.BigDecimal;
 import java.util.Optional;
+
+import com.fraud.engine.config.FraudPolicyProperties;
 import com.fraud.engine.model.Transaction;
 import org.springframework.stereotype.Component;
 
 @Component
 public class HighAmountRule implements FraudRule {
-    // Threshold for high amount transactions, default is 10,000
-    private final BigDecimal threshold;
-    private int lastScore = 0;
+    private final FraudPolicyProperties.Amount policy;
 
-    public HighAmountRule(BigDecimal threshold) { this.threshold = threshold; }
-    public HighAmountRule() { this(new BigDecimal("10000.00")); }
-
-    @Override
-    public Optional<String> apply(Transaction t) {
-        // Check the transaction amount against various thresholds
-        BigDecimal amount = t.getAmount();
-        if (amount.compareTo(new BigDecimal("50000")) > 0) { lastScore = 80; return Optional.of("CRITICAL amount: R" + amount + " [Risk: +80]"); }
-        if (amount.compareTo(new BigDecimal("20000")) > 0) { lastScore = 50; return Optional.of("Very high amount: R" + amount + " [Risk: +50]"); }
-        if (amount.compareTo(threshold) > 0) { lastScore = 30; return Optional.of("High amount: R" + amount + " > R" + threshold + " [Risk: +30]"); }
-        lastScore = 0;
-        return Optional.empty();
+    public HighAmountRule(FraudPolicyProperties properties) {
+        this.policy = properties.getRules().getAmount();
     }
 
-    @Override public String getRuleName() { return "HighAmountRule"; }
-    @Override public int getRiskScore() { return lastScore; }
+    @Override
+    public Optional<RuleMatch> evaluate(Transaction t) {
+        BigDecimal amount = t.getAmount();
+        if (amount.compareTo(policy.getCriticalThreshold()) > 0) {
+            return Optional.of(new RuleMatch(
+                    "Critical amount: " + amount + " [Risk: +" + policy.getCriticalScore() + "]",
+                    policy.getCriticalScore()));
+        }
+        if (amount.compareTo(policy.getHighThreshold()) > 0) {
+            return Optional.of(new RuleMatch(
+                    "Very high amount: " + amount + " [Risk: +" + policy.getHighScore() + "]",
+                    policy.getHighScore()));
+        }
+        if (amount.compareTo(policy.getThreshold()) > 0) {
+            return Optional.of(new RuleMatch(
+                    "High amount: " + amount + " exceeds " + policy.getThreshold()
+                            + " [Risk: +" + policy.getScore() + "]",
+                    policy.getScore()));
+        }
+        return Optional.empty();
+    }
 }

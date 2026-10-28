@@ -2,24 +2,48 @@ package com.fraud.engine.model;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(
+    name = "fraud_result",
+    uniqueConstraints = @UniqueConstraint(name = "uk_fraud_result_transaction_id", columnNames = "transaction_id")
+)
 public class FraudResult {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "transaction_id", nullable = false, length = 100)
     private String transactionId;
+
+    @Column(name = "policy_version", nullable = false, length = 100)
+    private String policyVersion;
+
+    @Column(name = "event_category", nullable = false, length = 50)
+    private String eventCategory;
+
+    @Column(name = "transaction_timestamp")
+    private OffsetDateTime transactionTimestamp;
+
+    @Column(nullable = false, precision = 14, scale = 2)
     private BigDecimal amount;
+
+    @Column(length = 100)
     private String country;
+
     private boolean fraud;
     private int riskScore;
-    private String category; // HIGH, MEDIUM, LOW
 
-    @ElementCollection
+    @Column(nullable = false, length = 20)
+    private String category;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "fraud_result_reasons", joinColumns = @JoinColumn(name = "fraud_result_id"))
+    @Column(name = "reason", length = 500)
     private List<String> reasons = new ArrayList<>();
 
     public FraudResult() {}
@@ -38,6 +62,17 @@ public class FraudResult {
 
     public String getTransactionId() { return transactionId; }
     public void setTransactionId(String transactionId) { this.transactionId = transactionId; }
+
+    public String getPolicyVersion() { return policyVersion; }
+    public void setPolicyVersion(String policyVersion) { this.policyVersion = policyVersion; }
+
+    public String getEventCategory() { return eventCategory; }
+    public void setEventCategory(String eventCategory) { this.eventCategory = eventCategory; }
+
+    public OffsetDateTime getTransactionTimestamp() { return transactionTimestamp; }
+    public void setTransactionTimestamp(OffsetDateTime transactionTimestamp) {
+        this.transactionTimestamp = transactionTimestamp;
+    }
 
     public BigDecimal getAmount() { return amount; }
     public void setAmount(BigDecimal amount) { this.amount = amount; }

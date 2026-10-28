@@ -1,33 +1,35 @@
 package com.fraud.engine.rules;
 
 import java.util.Optional;
+
+import com.fraud.engine.config.FraudPolicyProperties;
 import com.fraud.engine.model.Transaction;
 import org.springframework.stereotype.Component;
 
 @Component
 public class NightTimeRule implements FraudRule {
-    private int lastScore = 0;
 
-    @Override
-    public Optional<String> apply(Transaction transaction) {
-        if (transaction.getTimestamp() == null) return Optional.empty();
-        int hour = transaction.getTimestamp().getHour();
-        
-        // 00:00 - 04:59 = Most risky (people sleeping)
-        if (hour >= 0 && hour <= 4) {
-            lastScore = 40;
-            return Optional.of("Suspicious night transaction at " + hour + ":00 [Risk: +40]");
-        }
-        // 22:00 - 23:59 = Risky (people winding down, less alert)
-        if (hour >= 22) {
-            lastScore = 20;
-            return Optional.of("Late night transaction at " + hour + ":00 [Risk: +20]");
-        }
-        // 05:00 - 21:59 = Normal hours (no risk-low risk people are mostly awake and alert)
-        lastScore = 0;
-        return Optional.empty();
+    private final FraudPolicyProperties.NightTime policy;
+
+    public NightTimeRule(FraudPolicyProperties properties) {
+        this.policy = properties.getRules().getNightTime();
     }
 
-    @Override public String getRuleName() { return "NightTimeRule"; }
-    @Override public int getRiskScore() { return lastScore; }
+    @Override
+    public Optional<RuleMatch> evaluate(Transaction transaction) {
+        if (transaction.getTimestamp() == null) return Optional.empty();
+        int hour = transaction.getTimestamp().getHour();
+
+        if (hour >= policy.getEarlyStartHour() && hour <= policy.getEarlyEndHour()) {
+            return Optional.of(new RuleMatch(
+                    "Early-hours transaction at " + hour + ":00 [Risk: +" + policy.getEarlyScore() + "]",
+                    policy.getEarlyScore()));
+        }
+        if (hour >= policy.getLateStartHour() && hour <= policy.getLateEndHour()) {
+            return Optional.of(new RuleMatch(
+                    "Late-hours transaction at " + hour + ":00 [Risk: +" + policy.getLateScore() + "]",
+                    policy.getLateScore()));
+        }
+        return Optional.empty();
+    }
 }
