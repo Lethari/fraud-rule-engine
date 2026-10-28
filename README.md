@@ -73,11 +73,11 @@ $credentials = "your-api-username:your-api-password-at-least-12-characters"
 $encoded = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes($credentials))
 $headers = @{ Authorization = "Basic $encoded" }
 $transaction = @{
-    id        = "txn-1001"
-    eventCategory = "PURCHASE"
-    amount    = 12500.00
-    country   = "ZA"
-    timestamp = "2026-10-27T23:00:00+02:00"
+    "id": "txn-001",
+    "eventCategory": "PURCHASE",
+    "amount": 1500.50,
+    "country": "ZA",
+    "timestamp": "2026-10-28T20:10:00+02:00"
 } | ConvertTo-Json
 
 Invoke-RestMethod `

@@ -1,0 +1,7 @@
+{
+    "id": "txn-003",
+    "eventCategory": "WIRE_TRANSFER",
+    "amount": 20000.00,
+    "country": "ZA",
+    "timestamp": "2026-10-28T20:12:00Z"
+}

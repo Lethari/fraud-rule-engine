@@ -1,0 +1,7 @@
+{
+    "id": "txn-004",
+    "eventCategory": "WITHDRAWAL",
+    "amount": 15000.00,
+    "country": "NG",
+    "timestamp": "2026-10-28T20:13:00Z"
+}

@@ -11,5 +11,5 @@ target/
 .factorypath
 .springBeans
 *.log
-.DS_Store"target/" 
-target/ 
+.DS_Store"target/"
+target/

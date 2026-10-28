@@ -1,0 +1,7 @@
+{
+    "id": "txn-002",
+    "eventCategory": "ONLINE_PURCHASE",
+    "amount": 99999.99,
+    "country": "US",
+    "timestamp": "2026-10-28T20:11:00Z"
+}

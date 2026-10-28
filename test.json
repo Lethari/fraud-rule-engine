@@ -1,0 +1,7 @@
+{
+    "id": "txn_001",
+    "eventCategory": "PURCHASE",
+    "amount": 1500.50,
+    "country": "ZA",
+    "timestamp": "2026-10-28T20:10:00+02:00"
+}
